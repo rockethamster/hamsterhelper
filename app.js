@@ -729,9 +729,9 @@ function loadTestData() {
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
             cellData[i][j].mapScores = [
-                Math.random() * 20,
-                Math.random() * 20,
-                Math.random() * 20
+                Math.floor(Math.random() * 21),
+                Math.floor(Math.random() * 21),
+                Math.floor(Math.random() * 21)
             ];
         }
     }
@@ -780,8 +780,9 @@ function loadSheetToMatrix() {
             for (let j = 0; j < 5; j++) {
                 const score = parseFloat(row[j + 1]);
                 if (!isNaN(score)) {
-                    // Load as uniform map score across all 3 maps
-                    cellData[i][j].mapScores = [score, score, score];
+                    // Load as uniform map score across all 3 maps, rounded to integer
+                    const roundedScore = Math.round(score);
+                    cellData[i][j].mapScores = [roundedScore, roundedScore, roundedScore];
                 }
             }
         }
@@ -914,7 +915,7 @@ function updateMatrixCells() {
             ['A', 'B', 'C'].forEach((label, idx) => {
                 const s = mapScores[idx];
                 pips[idx].style.background = scoreToColor(s, 0.9);
-                pips[idx].title = `Map ${label}: ${s.toFixed(1)}`;
+                pips[idx].title = `Map ${label}: ${Math.round(s)}`;
             });
 
             // Cell background
@@ -1057,15 +1058,15 @@ function openScorePopover(i, j, cellEl) {
     mapContainer.innerHTML = '';
     const mapFileBase = missionData.mapFile || '';
     ['A', 'B', 'C'].forEach((mapLabel, idx) => {
-        const score = mapData.mapScores[idx] ?? 10;
+        const score = Math.round(mapData.mapScores[idx] ?? 10);
         const mapFilename = `${mapFileBase}-${mapLabel}.png`;
         const row = document.createElement('div');
         row.className = 'map-row';
         row.innerHTML = `
             <button class="map-label map-label-btn" title="View Map ${mapLabel} layout" data-file="${mapFilename}" data-label="Map ${mapLabel} — ${missionData.mission}">Map ${mapLabel}</button>
             <div class="map-input-group">
-                <input type="range" class="map-slider" min="0" max="20" step="0.5" value="${score}" data-map="${idx}" aria-label="Map ${mapLabel} score slider">
-                <input type="number" class="map-number" min="0" max="20" step="0.5" value="${score}" data-map="${idx}" aria-label="Map ${mapLabel} score">
+                <input type="range" class="map-slider" min="0" max="20" step="1" value="${score}" data-map="${idx}" aria-label="Map ${mapLabel} score slider">
+                <input type="number" class="map-number" min="0" max="20" step="1" value="${score}" data-map="${idx}" aria-label="Map ${mapLabel} score">
             </div>
             <span class="map-pip-lg" data-map="${idx}" style="background:${scoreToColor(score, 0.9)};"></span>
         `;
@@ -1080,7 +1081,7 @@ function openScorePopover(i, j, cellEl) {
         const pip = row.querySelector('.map-pip-lg');
 
         const syncValues = (val) => {
-            const clamped = Math.max(0, Math.min(20, val));
+            const clamped = Math.round(Math.max(0, Math.min(20, val)));
             slider.value = clamped;
             number.value = clamped;
             pip.style.background = scoreToColor(clamped, 0.9);
@@ -1174,7 +1175,7 @@ function savePopoverData() {
     if (!activePopoverCell) return;
     const { i, j } = activePopoverCell;
     const sliders = document.querySelectorAll('#popover-maps .map-slider');
-    cellData[i][j].mapScores = Array.from(sliders).map(s => parseFloat(s.value) || 0);
+    cellData[i][j].mapScores = Array.from(sliders).map(s => Math.round(parseFloat(s.value) || 0));
     updateMatrixCells();
 }
 
@@ -1293,7 +1294,7 @@ function updateDraftUI() {
                             <button style="border: 1px solid rgba(255,255,255,0.2); border-radius: 0.25rem; overflow:hidden; width:60px; height:40px; padding:0; background:#1e293b; cursor:pointer;" onclick="openMapLightbox('${mapInfo.mapFilename}', 'Map ${mapInfo.mapLabel} — ${mapInfo.missionData.mission}', ${JSON.stringify(mapInfo.missionData).replace(/"/g, '&quot;')})">
                                 <img src="maps/${mapInfo.mapFilename}" style="width:100%; height:100%; object-fit:cover;">
                             </button>
-                            <div style="font-size:0.7rem; color:${scoreToTextColor(mapInfo.bestScore)}">${mapInfo.bestScore.toFixed(1)} pts</div>
+                            <div style="font-size:0.7rem; color:${scoreToTextColor(mapInfo.bestScore)}">${Math.round(mapInfo.bestScore)} pts</div>
                         </div>`;
                     }).join('')}
                 </div>
@@ -1344,7 +1345,7 @@ function updateDraftUI() {
                         <img src="maps/${mapInfo.mapFilename}" style="width:40px; height:25px; object-fit:cover; border-radius:0.15rem; border:1px solid rgba(255,255,255,0.2);">
                         <div style="display:flex; flex-direction:column; align-items:flex-start;">
                             <div style="font-size:0.75rem; font-weight:bold; color:#f8fafc;">Map ${mapInfo.mapLabel}</div>
-                            <div style="font-size:0.7rem; color:${scoreToTextColor(mapInfo.bestScore)};">${mapInfo.bestScore.toFixed(1)} pts</div>
+                            <div style="font-size:0.7rem; color:${scoreToTextColor(mapInfo.bestScore)};">${Math.round(mapInfo.bestScore)} pts</div>
                         </div>
                     </div>
                 </div>
@@ -1411,7 +1412,7 @@ function renderMatches() {
                 <div>
                     <div><strong>${STATE.ourTeam[m.ourIdx]}</strong></div>
                     <div style="font-size:0.8rem;">vs <strong>${STATE.oppTeam[m.oppIdx]}</strong></div>
-                    <div class="match-score" style="color:${scoreToTextColor(mapInfo.bestScore)}">${mapInfo.bestScore.toFixed(1)} pts</div>
+                    <div class="match-score" style="color:${scoreToTextColor(mapInfo.bestScore)}">${Math.round(mapInfo.bestScore)} pts</div>
                 </div>
                 <button title="Map ${mapInfo.mapLabel}" style="flex-shrink:0; border: 1px solid rgba(255,255,255,0.2); border-radius: 0.25rem; overflow:hidden; width:50px; height:35px; padding:0; background:#1e293b; cursor:pointer;" onclick="openMapLightbox('${mapInfo.mapFilename}', 'Map ${mapInfo.mapLabel} — ${mapInfo.missionData.mission}', ${JSON.stringify(mapInfo.missionData).replace(/"/g, '&quot;')})">
                     <img src="maps/${mapInfo.mapFilename}" style="width:100%; height:100%; object-fit:cover;">
