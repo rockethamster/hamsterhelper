@@ -117,7 +117,10 @@
                         <label for="round-select" style="font-weight: bold; color: var(--text-muted);">Current Round:</label>
                         <input type="number" id="round-select" class="disp-select" min="1" max="10" value="1" style="width: 80px;">
                     </div>
-                    <button id="start-draft-btn" class="btn primary">Start Draft Process</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button id="resume-draft-btn" class="btn primary" style="display: none;">Resume Draft</button>
+                        <button id="start-draft-btn" class="btn primary">Start Draft Process</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,6 +130,9 @@
             <div class="draft-layout">
                 <!-- Left: State & Pools -->
                 <div class="draft-sidebar">
+                    <button id="back-to-matrix-btn" class="btn" style="width: 100%; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);">
+                        <span>← Back to Matrix</span>
+                    </button>
                     <div class="panel">
                         <h3>Matchups (<span id="total-score">0</span> pts)</h3>
                         <div id="locked-matches" class="matches-list"></div>

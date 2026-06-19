@@ -406,6 +406,7 @@ const STATE = {
     meOurChoiceOppAtk: -1,
     meOppChoiceOurAtk: -1,
 
+    draftActive: false,
     matches: []
 };
 
@@ -638,10 +639,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initCellData();
     initMatrix();
     setupEventListeners();
+    updateMatrixFooterButtons();
 });
 
 function setupEventListeners() {
     document.getElementById('start-draft-btn').addEventListener('click', startDraft);
+    document.getElementById('resume-draft-btn').addEventListener('click', resumeDraft);
+    document.getElementById('back-to-matrix-btn').addEventListener('click', () => {
+        switchView('matrix-view');
+    });
     document.getElementById('confirm-action-btn').addEventListener('click', confirmAction);
 
     // Excel Upload logic
@@ -698,7 +704,10 @@ function setupEventListeners() {
 function switchView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
-    if (viewId === 'matrix-view') closeScorePopover();
+    if (viewId === 'matrix-view') {
+        closeScorePopover();
+        updateMatrixFooterButtons();
+    }
 }
 
 // --- EXCEL UPLOAD ---
@@ -1193,6 +1202,42 @@ function closeScorePopover() {
 
 // --- DRAFT SETUP ---
 
+function updateMatrixFooterButtons() {
+    const resumeBtn = document.getElementById('resume-draft-btn');
+    const startBtn = document.getElementById('start-draft-btn');
+    if (!resumeBtn || !startBtn) return;
+
+    if (STATE.draftActive) {
+        resumeBtn.style.display = 'inline-block';
+        startBtn.textContent = 'Restart Draft';
+        startBtn.classList.remove('primary');
+        startBtn.style.background = 'rgba(255,255,255,0.1)';
+    } else {
+        resumeBtn.style.display = 'none';
+        startBtn.textContent = 'Start Draft Process';
+        startBtn.classList.add('primary');
+        startBtn.style.background = '';
+    }
+}
+
+function resumeDraft() {
+    STATE.ourTeam = Array.from(document.querySelectorAll('.our-name')).map(el => el.value);
+    STATE.oppTeam = Array.from(document.querySelectorAll('.opp-name')).map(el => el.value);
+    STATE.round = parseInt(document.getElementById('round-select').value) || 1;
+
+    STATE.matrix = [];
+    for (let i = 0; i < 5; i++) {
+        STATE.matrix[i] = [];
+        for (let j = 0; j < 5; j++) {
+            STATE.matrix[i][j] = getCellExpectedScore(i, j);
+        }
+    }
+
+    switchView('draft-view');
+    updateMatchesState();
+    updateDraftUI();
+}
+
 function startDraft() {
     STATE.ourTeam = Array.from(document.querySelectorAll('.our-name')).map(el => el.value);
     STATE.oppTeam = Array.from(document.querySelectorAll('.opp-name')).map(el => el.value);
@@ -1222,6 +1267,8 @@ function startDraft() {
     STATE.meOppChoiceOurAtk = -1;
 
     STATE.matches = [];
+    STATE.draftActive = true;
+    updateMatrixFooterButtons();
 
     switchView('draft-view');
     updateDraftUI();
@@ -1271,6 +1318,8 @@ function updateDraftUI() {
     renderMatches();
 
     if (STATE.step === STEPS.DONE) {
+        STATE.draftActive = false;
+        updateMatrixFooterButtons();
         document.querySelector('.active-step-panel').innerHTML = `
             <h2 style="text-align:center; font-size: 3rem; margin-bottom: 2rem; font-family: var(--font-heading);">FINAL PAIRINGS</h2>
             <div class="final-pairings-layout">
