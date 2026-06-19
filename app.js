@@ -1,10 +1,10 @@
 const FACTIONS = [
-    "Space Marines", "Black Templars", "Blood Angels", "Dark Angels", "Space Wolves",
-    "Deathwatch", "Grey Knights", "Imperial Agents", "Astra Militarum", "Adepta Sororitas",
-    "Adeptus Custodes", "Adeptus Mechanicus", "Imperial Knights", "Chaos Space Marines",
-    "World Eaters", "Thousand Sons", "Death Guard", "Emperor's Children", "Chaos Daemons",
-    "Chaos Knights", "Tyranids", "Genestealer Cults", "Aeldari", "Drukhari", "Necrons",
-    "Orks", "T'au Empire", "Leagues of Votann"
+    "Adepta Sororitas", "Adeptus Custodes", "Adeptus Mechanicus", "Aeldari", "Astra Militarum",
+    "Black Templars", "Blood Angels", "Chaos Daemons", "Chaos Knights", "Chaos Space Marines",
+    "Dark Angels", "Death Guard", "Deathwatch", "Drukhari", "Emperor's Children", "Genestealer Cults",
+    "Grey Knights", "Imperial Agents", "Imperial Knights", "Leagues of Votann", "Necrons",
+    "Orks", "Space Marines", "Space Wolves", "T'au Empire", "Thousand Sons", "Tyranids",
+    "World Eaters"
 ];
 
 const DISPOSITIONS = [
